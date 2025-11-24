@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Character, CharacterWithView, TableFilters, SortDirection } from '../types';
-
-const API_URL = 'http://localhost:3001/characters';
+import characterData from '../data/characters.json';
 
 export const useCharacters = () => {
   const [characters, setCharacters] = useState<CharacterWithView[]>([]);
@@ -14,20 +13,23 @@ export const useCharacters = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCharacters = async () => {
+    const loadCharacters = async () => {
       setIsLoading(true);
+      
+      // Simulate network delay for better UX (shows loading state)
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       try {
-        const response = await fetch(API_URL);
-        const data: Character[] = await response.json();
+        const data = characterData.characters as Character[];
         setCharacters(data.map(char => ({ ...char, viewed: false })));
       } catch (error) {
-        console.error('Error fetching characters:', error);
+        console.error('Error loading characters:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCharacters();
+    loadCharacters();
   }, []);
 
   const filteredAndSortedCharacters = useMemo(() => {

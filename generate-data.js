@@ -34,13 +34,31 @@ function getRandomPower() {
 function generateData(count) {
   const data = [];
   
-  for (let i = 0; i < count; i++) {
-    // Create variations of names by adding suffixes
-    let name = getRandomElement(names);
-    if (i >= names.length) {
-      const suffix = Math.floor(i / names.length);
-      name = `${name} ${suffix > 0 ? suffix : ''}`.trim();
+  // Add fixed test characters first for consistent testing
+  const testCharacters = [
+    { id: 'test-naruto', name: 'Naruto', location: 'Konoha', health: 'Healthy', power: 10000 },
+    { id: 'test-sasuke', name: 'Sasuke', location: 'Konoha', health: 'Injured', power: 9500 },
+    { id: 'test-gaara', name: 'Gaara', location: 'Suna', health: 'Critical', power: 8500 },
+    { id: 'test-rocklee', name: 'Rock Lee', location: 'Konoha', health: 'Healthy', power: 50 },
+    { id: 'test-killerbee', name: 'Killer Bee', location: 'Kumo', health: 'Healthy', power: 9000 },
+  ];
+  
+  data.push(...testCharacters);
+  
+  // Names to exclude from random generation (test characters)
+  const testNames = testCharacters.map(char => char.name);
+  const availableNames = names.filter(name => !testNames.includes(name));
+  
+  // Generate remaining random characters
+  let nameIndex = 0;
+  for (let i = testCharacters.length; i < count; i++) {
+    // Use available names cyclically
+    let name = availableNames[nameIndex % availableNames.length];
+    if (nameIndex >= availableNames.length) {
+      const suffix = Math.floor(nameIndex / availableNames.length);
+      name = `${name} ${suffix}`;
     }
+    nameIndex++;
     
     data.push({
       id: generateId(),
